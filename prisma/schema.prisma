@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+//table 
+model user {
+    id       String    @id @default(cuid())
+    pseudo   String
+    password String
+    email    String    @unique
+    isadmin  Boolean   @default(false)
+    posts    post[]
+}
+
+model recipe {
+    id_recipe           String               @id
+    time_of_preparation Int
+    ingredients         ingredientinrecipe[]
+    posts               post[]
+    name                String
+    description         String?
+    number_of_person    Int
+    photo               String? @default("https://m1.zeste.ca/serdy-m-dia-inc/image/upload/f_auto/fl_lossy/q_auto:eco/x_0,y_933,w_2550,h_1434,c_crop/w_1200,h_630,c_scale/v1629984960/foodlavie/prod/articles/top-recettes-de-semaine-a-petit-prix-adb0f92f")
+    recipetypeid        String
+    recipetype          recipe_type          @relation(fields: [recipetypeid], references: [id_recipe_type])
+}
+
+model recipe_type {
+    id_recipe_type String   @id
+    name           String
+    recipes        recipe[]
+    posts          post[]
+}
+
+model ingredient {
+    id_ingredient String               @id
+    name          String
+    recipes       ingredientinrecipe[]
+}
+
+model ingredientinrecipe {
+    id           String     @id @default(uuid())
+    quantity     Int
+    unit         String
+    recipeid     String
+    ingredientid String
+    recipe       recipe     @relation(fields: [recipeid], references: [id_recipe])
+    ingredient   ingredient @relation(fields: [ingredientid], references: [id_ingredient])
+}
+
+model post {
+    id_post      String      @id
+    title        String
+    content      String
+    date         DateTime
+    user         user        @relation(fields: [iduser], references: [id])
+    iduser       String      @map("id_user")
+    recipe       recipe      @relation(fields: [idrecipe], references: [id_recipe])
+    idrecipe     String
+    recipetypeid String
+    recipetype   recipe_type @relation(fields: [recipetypeid], references: [id_recipe_type])
+}
