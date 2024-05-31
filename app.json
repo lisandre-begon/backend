@@ -1,0 +1,17 @@
+{
+    "name": "cuilinaryback",
+    "scripts": {
+      "dokku": {
+        "predeploy": "npm install --production",
+        "postdeploy": "echo 'Deployed!'"
+      }
+    },
+    "healthchecks": {
+      "web": {
+        "test": "curl --silent --fail http://localhost:$PORT"
+      }
+    }
+    
+  }
+
+  
